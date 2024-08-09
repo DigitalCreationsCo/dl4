@@ -1,4 +1,5 @@
-from flask import Flask
+import os
+from flask import Flask, send_from_directory
 from flask_migrate import Migrate
 from config import Config
 from models import db
@@ -14,6 +15,11 @@ app.config.from_object(Config)
 
 db.init_app(app)
 migrate = Migrate(app, db)
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 # Register blueprints
 app.register_blueprint(home_bp)
