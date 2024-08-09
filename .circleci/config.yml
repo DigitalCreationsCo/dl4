@@ -1,0 +1,82 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@2.1.1
+
+jobs:
+  build-and-test:
+    docker:
+      - image: cimg/python:3.11.6
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: pip
+          # venv-name: venv
+      - run:
+          name: Upgrade pip
+          command: |
+            # . venv/bin/activate
+            pip install --upgrade pip
+      - run:
+          name: Install production dependencies
+          command: |
+            # . venv/bin/activate
+            pip install -r requirements.txt
+      - run:
+          name: Install Gunicorn
+          command: |
+            # . venv/bin/activate
+            pip install gunicorn
+      - run:
+          name: Set Flask environment
+          command: echo 'export FLASK_ENV=production' >> $BASH_ENV
+      - run:
+          name: Run database migrations
+          command: |
+            # . venv/bin/activate
+            if [ -d "migrations" ]; then
+              flask db upgrade
+            fi
+      - run:
+          name: Collect static files
+          command: |
+            # . venv/bin/activate
+            if [ -d "static" ]; then
+              echo "Implement static file collection here if needed"
+            fi
+      - run:
+          name: Run tests
+          command: |
+            # . venv/bin/activate
+            # python -m pytest
+      - run:
+          name: Compile Python bytecode
+          command: |
+            # . venv/bin/activate
+            python -m compileall .
+      - run:
+          name: Update requirements.txt
+          command: |
+            # . venv/bin/activate
+            pip freeze > requirements.txt
+      - run:
+          name: Create wsgi.py
+          command: |
+            echo "from app import app" > wsgi.py
+            echo "" >> wsgi.py
+            echo 'if __name__ == "__main__":' >> wsgi.py
+            echo '    app.run()' >> wsgi.py
+      - run:
+          name: Create Procfile
+          command: |
+            echo "web: gunicorn wsgi:app" > Procfile
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+workflows:
+  version: 2
+  build-test-deploy:
+    jobs:
+      - build-and-test
