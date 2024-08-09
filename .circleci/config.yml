@@ -68,7 +68,8 @@ jobs:
             echo '    app.run()' >> wsgi.py
       - run:
           name: Create Procfile
-          command: echo "web: gunicorn wsgi:app" > Procfile
+          command: |
+            echo "web: gunicorn wsgi:app" > Procfile
       - persist_to_workspace:
           root: .
           paths:
