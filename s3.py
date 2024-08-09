@@ -12,18 +12,28 @@ s3_client = boto3.client('s3',
 )
 
 
-def upload_file_to_s3(file, object_name=None):
+print(f"Bucket: {BUCKET_NAME}")
+print(f"Region: {REGION}")
+print(f"Access Key ID: {os.environ.get('AWS_ACCESS_KEY_ID')[:5]}...")  # Print first 5 chars for security
+print(f"Secret Access Key: {os.environ.get('AWS_SECRET_ACCESS_KEY')[:5]}...")
+
+def upload_file_to_s3(file, object_name=None, ACL='private'):
     if object_name is None:
         object_name = secure_filename(file.filename)
-
+    
+    print(f"Upload file::Object Name: {object_name}")
     try:
-        s3_client.upload_fileobj(file, BUCKET_NAME, object_name)
+        s3_client.put_object(Body=file, Bucket=BUCKET_NAME, Key=object_name, ACL=ACL)
     except ClientError as e:
-        print(e)
+        print(f"An error occurred: {e}")
+        print(f"Error Code: {e.response['Error']['Code']}")
+        print(f"Error Message: {e.response['Error']['Message']}")
         return None
     return f"https://{BUCKET_NAME}.s3.{REGION}.amazonaws.com/{object_name}"
 
 def get_file_from_s3(object_name):
+    print(f"Get file::Object Name: {object_name}")
+
     try:
         response = s3_client.get_object(Bucket=BUCKET_NAME, Key=object_name)
         return response['Body'].read()
@@ -32,6 +42,8 @@ def get_file_from_s3(object_name):
         return None
 
 def delete_file_from_s3(object_name):
+    print(f"Delete file::Object Name: {object_name}")
+
     try:
         s3_client.delete_object(Bucket=BUCKET_NAME, Key=object_name)
         return True

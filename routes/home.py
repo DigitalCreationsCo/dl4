@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import Blueprint, redirect, render_template, request, session, url_for
+from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 from models import Product
 from s3 import get_signed_url
 
@@ -13,6 +13,20 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+@home_bp.route('/success')
+def success():
+    # Flash a success message
+    flash("Your action was successful!", "success")
+    # Redirect to the index page
+    return redirect(url_for('home.index'))
+
+@home_bp.route('/error')
+def error():
+    # Flash an error message
+    flash("An error occurred. Please try again.", "error")
+    # Redirect to the index page
+    return redirect(url_for('home.index'))
+
 @home_bp.route('/')
 @login_required
 def index():
@@ -24,7 +38,6 @@ def index():
     # get signed url for each product image
     for product in products:
         if product.image_url:
-            print(product.image_url)
             object_key = product.image_url.split('com/')[-1]  # Extract the object key from the S3 URL
             product.image_url = get_signed_url(object_key)
     return render_template('home.html', products=products)
