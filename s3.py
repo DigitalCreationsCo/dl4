@@ -2,6 +2,8 @@ import boto3
 from botocore.exceptions import ClientError
 import os
 from werkzeug.utils import secure_filename
+from dotenv import load_dotenv
+load_dotenv()
 
 BUCKET_NAME = os.environ.get('AWS_S3_BUCKET')
 REGION = os.environ.get('AWS_REGION')
