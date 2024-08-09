@@ -91,7 +91,7 @@ jobs:
       - run:
           name: Deploy to Elastic Beanstalk
           command: |
-            eb use your-environment-name --profile eb-cli
+            eb use Dl4-prod --profile eb-cli
             eb deploy --profile eb-cli
 
 workflows:
