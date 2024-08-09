@@ -116,7 +116,6 @@ psutil==6.0.0
 psycopg2-binary==2.9.9
 ptyprocess==0.7.0
 pure-eval==0.2.2
-PyAutoGUI==0.9.54
 pycparser==2.21
 pydantic==2.8.2
 pydantic-settings==2.4.0
@@ -125,9 +124,6 @@ pydub==0.25.1
 PyGetWindow==0.0.9
 Pygments==2.18.0
 PyMsgBox==1.0.9
-pyobjc-core==10.2
-pyobjc-framework-Cocoa==10.2
-pyobjc-framework-Quartz==10.2
 pyparsing==3.1.2
 pyperclip==1.8.2
 PyRect==0.2.0
