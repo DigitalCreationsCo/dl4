@@ -11,21 +11,21 @@ jobs:
       - checkout
       - python/install-packages:
           pkg-manager: pip
-          venv-name: venv
+          # venv-name: venv
       - run:
           name: Upgrade pip
           command: |
-            . venv/bin/activate
+            # . venv/bin/activate
             pip install --upgrade pip
       - run:
           name: Install production dependencies
           command: |
-            . venv/bin/activate
+            # . venv/bin/activate
             pip install -r requirements.txt
       - run:
           name: Install Gunicorn
           command: |
-            . venv/bin/activate
+            # . venv/bin/activate
             pip install gunicorn
       - run:
           name: Set Flask environment
@@ -33,31 +33,31 @@ jobs:
       - run:
           name: Run database migrations
           command: |
-            . venv/bin/activate
+            # . venv/bin/activate
             if [ -d "migrations" ]; then
               flask db upgrade
             fi
       - run:
           name: Collect static files
           command: |
-            . venv/bin/activate
+            # . venv/bin/activate
             if [ -d "static" ]; then
               echo "Implement static file collection here if needed"
             fi
       - run:
           name: Run tests
           command: |
-            . venv/bin/activate
+            # . venv/bin/activate
             # python -m pytest
       - run:
           name: Compile Python bytecode
           command: |
-            . venv/bin/activate
+            # . venv/bin/activate
             python -m compileall .
       - run:
           name: Update requirements.txt
           command: |
-            . venv/bin/activate
+            # . venv/bin/activate
             pip freeze > requirements.txt
       - run:
           name: Create wsgi.py
