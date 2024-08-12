@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BUCKET_NAME = os.environ.get('AWS_S3_BUCKET')
-REGION = os.environ.get('AWS_REGION')
+REGION = os.environ.get('AWS_DEFAULT_REGION')
 s3_client = boto3.client('s3',
     aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID'),
     aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY'),
