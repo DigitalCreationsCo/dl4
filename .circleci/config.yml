@@ -78,14 +78,20 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-          
+
       - aws-cli/setup
       - run:
-          name: view path
+          name: View Path
           command: pwd
       - run:
           name: List Directory Contents
           command: ls -la
+
+      - run:
+          name: Get Commit Short SHA
+          command: |
+            export SHORT_SHA=$(echo $CIRCLE_SHA1 | cut -c 1-7)
+            
       - run:
           name: Install AWS Elastic Beanstalk CLI
           command: |
@@ -103,7 +109,8 @@ jobs:
           name: Deploy to Elastic Beanstalk
           command: |
             eb use Dl4-prod
-            eb deploy --label $CIRCLE_BUILD_NUM  # Use CircleCI build number as version label
+            eb deploy --label $SHORT_SHA
+
 
 workflows:
   version: 2
