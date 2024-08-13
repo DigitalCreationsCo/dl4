@@ -3,8 +3,8 @@ branch-defaults:
     environment: Dl4-prod
 environment-defaults:
   Dl4-prod:
-    branch: main
-    repository: https://github.com/DigitalCreationsCo/dl4.git
+    branch: null
+    repository: null
 global:
   application_name: dl4
   default_ec2_keyname: null
@@ -13,7 +13,7 @@ global:
   include_git_submodules: true
   instance_profile: null
   platform_name: null
-  platform_version: 4.1.3
-  profile: default
+  platform_version: null
+  profile: null
   sc: git
   workspace_type: Application
