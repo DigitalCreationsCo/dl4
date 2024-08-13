@@ -92,7 +92,7 @@ jobs:
           name: Deploy to Elastic Beanstalk
           command: |
             eb use Dl4-prod
-            eb deploy
+            eb deploy --label $CIRCLE_BUILD_NUM  # Use CircleCI build number as version label
 
 workflows:
   version: 2
