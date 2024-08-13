@@ -10,6 +10,8 @@ jobs:
       - image: cimg/python:3.11.6
     steps:
       - checkout
+      - attach_workspace:
+          at: .
       - python/install-packages:
           pkg-manager: pip
           # venv-name: venv
@@ -75,6 +77,12 @@ jobs:
       - attach_workspace:
           at: .
       - aws-cli/setup
+      - run:
+          name: view path
+          command: pwd
+      - run:
+          name: List Directory Contents
+          command: ls -la
       - run:
           name: Install AWS Elastic Beanstalk CLI
           command: |
