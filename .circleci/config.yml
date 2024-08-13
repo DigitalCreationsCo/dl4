@@ -10,8 +10,6 @@ jobs:
       - image: cimg/python:3.11.6
     steps:
       - checkout
-      - attach_workspace:
-          at: .
       - python/install-packages:
           pkg-manager: pip
           # venv-name: venv
@@ -69,6 +67,10 @@ jobs:
             echo "" >> wsgi.py
             echo 'if __name__ == "__main__":' >> wsgi.py
             echo '    app.run()' >> wsgi.py
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .  
 
   deploy-to-eb:
     docker:
@@ -76,6 +78,7 @@ jobs:
     steps:
       - attach_workspace:
           at: .
+          
       - aws-cli/setup
       - run:
           name: view path
