@@ -79,20 +79,20 @@ jobs:
           name: Install AWS Elastic Beanstalk CLI
           command: |
             pip install awsebcli
-      - run:
-          name: Configure AWS credentials for Elastic Beanstalk
-          command: |
-            mkdir -p ~/.aws
-            echo "[eb-cli]" > ~/.aws/credentials
-            echo "aws_access_key_id = ${AWS_ACCESS_KEY_ID}" >> ~/.aws/credentials
-            echo "aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}" >> ~/.aws/credentials
-            echo "[profile eb-cli]" > ~/.aws/config
-            echo "region = ${AWS_DEFAULT_REGION}" >> ~/.aws/config
+      # - run:
+      #     name: Configure AWS credentials for Elastic Beanstalk
+      #     command: |
+      #       mkdir -p ~/.aws
+      #       echo "[eb-cli]" > ~/.aws/credentials
+      #       echo "aws_access_key_id = ${AWS_ACCESS_KEY_ID}" >> ~/.aws/credentials
+      #       echo "aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}" >> ~/.aws/credentials
+      #       echo "[profile eb-cli]" > ~/.aws/config
+      #       echo "region = ${AWS_DEFAULT_REGION}" >> ~/.aws/config
       - run:
           name: Deploy to Elastic Beanstalk
           command: |
-            eb use Dl4-prod --profile eb-cli
-            eb deploy --profile eb-cli
+            eb use Dl4-prod
+            eb deploy
 
 workflows:
   version: 2

@@ -1,0 +1,19 @@
+branch-defaults:
+  main:
+    environment: Dl4-prod
+environment-defaults:
+  Dl4-prod:
+    branch: null
+    repository: null
+global:
+  application_name: dl4
+  default_ec2_keyname: null
+  default_platform: Python 3.11 running on 64bit Amazon Linux 2023
+  default_region: us-east-2
+  include_git_submodules: true
+  instance_profile: null
+  platform_name: null
+  platform_version: 4.1.3
+  profile: null
+  sc: git
+  workspace_type: Application
