@@ -79,15 +79,15 @@ jobs:
           name: Install AWS Elastic Beanstalk CLI
           command: |
             pip install awsebcli
-      # - run:
-      #     name: Configure AWS credentials for Elastic Beanstalk
-      #     command: |
-      #       mkdir -p ~/.aws
-      #       echo "[eb-cli]" > ~/.aws/credentials
-      #       echo "aws_access_key_id = ${AWS_ACCESS_KEY_ID}" >> ~/.aws/credentials
-      #       echo "aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}" >> ~/.aws/credentials
-      #       echo "[profile eb-cli]" > ~/.aws/config
-      #       echo "region = ${AWS_DEFAULT_REGION}" >> ~/.aws/config
+      - run:
+          name: Configure AWS Credentials
+          command: |
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+            aws configure set default.region $AWS_DEFAULT_REGION
+      - run:
+          name: Initialize Elastic Beanstalk
+          command: eb init -p "Python 3.11 running on 64bit Amazon Linux 2023" -r us-east-2 -a dl4
       - run:
           name: Deploy to Elastic Beanstalk
           command: |
