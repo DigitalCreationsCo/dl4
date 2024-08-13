@@ -108,8 +108,9 @@ jobs:
       - run:
           name: Deploy to Elastic Beanstalk
           command: |
+            SHORTSHA=$(git rev-parse --short HEAD)
             eb use Dl4-prod
-            eb deploy --label $SHORT_SHA
+            eb deploy --label $SHORTSHA
 
 
 workflows:
