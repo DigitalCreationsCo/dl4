@@ -87,7 +87,7 @@ jobs:
             aws configure set default.region $AWS_DEFAULT_REGION
       - run:
           name: Initialize Elastic Beanstalk
-          command: eb init -p "Python 3.11 running on 64bit Amazon Linux 2023" -r us-east-2 -a dl4
+          command: eb init dl4 --platform "Python 3.11 running on 64bit Amazon Linux 2023" --region us-east-2
       - run:
           name: Deploy to Elastic Beanstalk
           command: |
