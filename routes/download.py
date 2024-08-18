@@ -1,4 +1,4 @@
-from flask import Blueprint, abort, jsonify, redirect, render_template, url_for, flash, session
+from flask import Blueprint, abort, jsonify, redirect, render_template, request, url_for, flash, session
 from datetime import datetime, timedelta
 import uuid
 import os
@@ -49,19 +49,17 @@ def generate_link(product_id):
     
     download_url = url_for('download.secure_download', token=token, _external=True)
     
+    name = request.args.get('name') or 'Product'
     if is_valid_url(download_url):
         flash(
-            f"Download link generated. It has a one-time use and will expire in 24 hours. "
+            f"{name} free download link generated. It has a one-time use and will expire in 24 hours. "
             f"<a target='_blank' href='{download_url}'>Your Download Link</a> ",
             # f"<button id='download-link' onclick='copyToClipboard()'>Copy</button>", 
             'success'
         )
     else:
         flash("Invalid download URL", 'error')
-
     return redirect(url_for('home.index'))
-
-    # return redirect(url_for('download.secure_download', token=token))
 
 @download_bp.route('/secure_download/<token>')
 def secure_download(token):
@@ -80,7 +78,6 @@ def secure_download(token):
         abort(404, description="Product file not found")
     
     file_url = file_urls[0]  # Assuming you want the first file
-    
     try:
         object_key = file_url.split('com/')[-1]  # Extract the object key from the S3 URL
         signed_url = get_signed_url(object_key)
@@ -88,6 +85,7 @@ def secure_download(token):
         print(f"Error generating signed URL: {e}")
         abort(500, description="Error generating download URL")
 
+    product.clicks += 1
     db.session.commit()
 
     return render_template('download_page.html', product=product, download_url=signed_url, token=token)

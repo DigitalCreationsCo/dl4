@@ -17,6 +17,7 @@ class Product(db.Model):
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(200), nullable=False)
     price = db.Column(db.Integer, nullable=False)
+    revenue = db.Column(db.Integer, default=0)
     image_url = db.Column(db.String, nullable=True)
     file_urls = db.Column(db.Text, nullable=False)
     is_folder = db.Column(db.Boolean, default=False)
@@ -26,6 +27,8 @@ class Product(db.Model):
     clicks = db.Column(db.Integer, default=0)
     downloads = db.relationship('DownloadLink', backref='product', lazy=True, cascade='all, delete-orphan')
     download_count = db.Column(db.Integer, default=0)
+    purchase_count = db.Column(db.Integer, default=0)
+    rating = db.Column(db.Float, nullable=True)
 
     def __init__(self, name, description, price, user_id, file_urls, image_url=None, is_folder=False):
         self.id = generate_unique_id()

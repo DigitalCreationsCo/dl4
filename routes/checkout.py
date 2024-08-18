@@ -27,7 +27,7 @@ def generate_checkout_link(product_id):
     #     return redirect(url_for('home.index'))
     
     token = str(uuid.uuid4())
-    expiration = datetime.utcnow() + timedelta(hours=24)
+    expiration = datetime.now() + timedelta(hours=23.99)
     link = DownloadLink(token=token, user_id=user.id, product_id=product_id, 
                         expiration_date=expiration)
     db.session.add(link)
@@ -36,9 +36,11 @@ def generate_checkout_link(product_id):
     checkout_url = url_for('checkout.create_checkout_session', token=token, _external=True)
     
     print(f"checkout_url: {checkout_url}")
+
+    name = request.args.get('name') or 'Product'
     if is_valid_url(checkout_url):
         flash(
-            f"A Checkout link is generated. It has a one-time use and will expire in 24 hours. "
+            f"{name} checkout link is generated. It has a one-purchase use and will expire in 24 hours. "
             f"<a target='_blank' href='{checkout_url}'>Your Checkout Link</a> ",
             # f"<button id='download-link' onclick='copyToClipboard()'>Copy</button>", 
             'success'
@@ -48,7 +50,7 @@ def generate_checkout_link(product_id):
 
     return redirect(url_for('home.index'))
 
-@checkout_bp.route('/<string:token>', methods=['GET'])
+@checkout_bp.route('/checkout/<string:token>', methods=['GET'])
 def create_checkout_session(token):
     download_link = DownloadLink.query.filter_by(token=token, is_used=False).first_or_404()
     
@@ -59,6 +61,9 @@ def create_checkout_session(token):
     if product.image_url:
             object_key = product.image_url.split('com/')[-1]  # Extract the object key from the S3 URL
             product.image_url = get_signed_url(object_key)
+
+    product.clicks += 1
+    db.session.commit()
 
     try:
         # Create a new Stripe Checkout Session
@@ -77,11 +82,11 @@ def create_checkout_session(token):
                 },
             ],
             mode='payment',
-            success_url=request.host_url + 'success?session_id={CHECKOUT_SESSION_ID}',
-            cancel_url=request.host_url + 'cancel',
+            expires_at=int(download_link.expiration_date.timestamp()),
+            success_url=f"{request.host_url}secure_download/{download_link.token}",
+            client_reference_id=download_link.token,
         )
-        return checkout_session.url
-        # return jsonify({'id': checkout_session.id, 'url': checkout_session.url})
+        return redirect(checkout_session.url)
     except Exception as e:
         return jsonify(error=str(e)), 403
 
@@ -98,27 +103,18 @@ def stripe_webhook():
         # Handle the checkout.session.completed event
         if event['type'] == 'checkout.session.completed':
             session = event['data']['object']
-            # product_id = session.get('client_reference_id')
-            product_id = get_product_id_from_session(session)  # Custom logic to map session to product
+            token = session.get('client_reference_id')
+            download_link = DownloadLink.query.filter_by(token=token).first_or_404()
+            product = Product.query.get_or_404(download_link.product_id)
 
-            if product_id:
-                # Generate a unique token for the download link
-                token = str(uuid.uuid4())
-                expiration_date = datetime.datetime.utcnow() + datetime.timedelta(hours=1)  # 1 hour expiry
+            if product:
 
-                # Create a new DownloadLink entry in the database
-                download_link = DownloadLink(
-                    token=token,
-                    user_id=session['customer'], # Assuming customer ID is stored in session
-                    product_id=product_id,
-                    expiration_date=expiration_date,
-                    is_used=False
-                )
-                db.session.add(download_link)
+                product.download_count += 1
+                product.purchase_count += 1
+                product.revenue += product.price
+                
+                download_link.is_used = True
                 db.session.commit()
-
-                # Send the download link (in practice, email or display to user)
-                print(f'Download link created: {request.host_url}download/{token}')
 
     except ValueError as e:
         # Invalid payload
