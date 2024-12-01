@@ -1,3 +1,5 @@
+# DL4 is a product management platform, for selling and sharing digital productsvia persistent and ephemeral private links.
+
 # Flask Application Setup and Run
 
 ## Setting Up the Environment
